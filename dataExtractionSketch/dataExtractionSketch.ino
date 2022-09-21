@@ -21,15 +21,10 @@ int page;
 
 void setup() {
   Serial.begin(115200);
+  Serial.setTimeout(1);
   
   // initialize flash chip
   flash.init(10); 
-   
-  // read the manufacturer ID to make sure communications are OK
-  // should output 0xEF
-  uint8_t manID = flash.manufacturerID(); 
-  Serial.print("Manufacturer ID: ");
-  Serial.println(manID, HEX);
 }
 
 void loop() {
@@ -44,7 +39,7 @@ void loop() {
   }
 
   // dump page into serial
-  for (uint16_t i = 0; i < 256; i++) {
+  for (int i = 0; i < 256; i++) {
     printByte(flash.read(page, (uint8_t)i));
   }
   Serial.println();
@@ -52,7 +47,7 @@ void loop() {
 } 
 
 // prints byte, ensuring two digits are used (ie: 12 --> '0C' rather than 'C')
-void printByte(uint8_t x) {
+void printByte(int x) {
   if (x < 16) {
     Serial.print('0');
   }
