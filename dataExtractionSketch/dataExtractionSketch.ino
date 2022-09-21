@@ -17,7 +17,7 @@
 #define NUMPAGES 8192 // number of pages in flash chip
 
 W25Q16 flash;
-int page;
+int lastPage;
 
 void setup() {
   Serial.begin(115200);
@@ -30,17 +30,19 @@ void setup() {
 void loop() {
   // wait for instruction (page from W25Q16 to dump into serial)
   while (!Serial.available());
-  page = Serial.readString().toInt();
+  lastPage = Serial.readString().toInt();
 
   // check that page exists
-  if (page >= NUMPAGES || page < 0) {
+  if (lastPage >= NUMPAGES || lastPage < 0) {
     Serial.println("Error: Given page number out of range");
     return;
   }
 
-  // dump page into serial
-  for (int i = 0; i < 256; i++) {
-    printByte(flash.read(page, (uint8_t)i));
+  // dump pages 0 throug lastPage inclusive into serial
+  for (int page = 0; page <= lastPage; page++) {
+    for (int i = 0; i < 256; i++) {
+      printByte(flash.read(page, (uint8_t)i));
+    }
   }
   Serial.println();
   
